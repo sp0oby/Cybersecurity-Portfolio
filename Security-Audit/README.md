@@ -37,9 +37,6 @@ As part of the **SecureTech Solutions** simulation, this project focuses on cond
 - `audit-report.md`  
   Full write-up with findings, analysis, and recommendations.
 
-- `screenshots/`  
-  Images of scan outputs and key findings.
-
 ## Setup Notes
 
 - **Target**: SecureTech-Server VM (192.168.56.101) with DVWA at  
