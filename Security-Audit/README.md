@@ -27,6 +27,9 @@ As part of the **SecureTech Solutions** simulation, this project focuses on cond
 
 ## Files in This Folder
 
+- `audit-scope-and-goals.md`  
+  Scope and goals for upcoming audit.
+
 - `nmap-scan-results.txt`  
   Raw output from Nmap scans.
 
