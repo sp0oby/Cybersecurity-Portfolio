@@ -23,7 +23,6 @@ As part of the **SecureTech Solutions** simulation, this project focuses on cond
   - OpenVAS/GVM (for automated vulnerability scanning)
 
 - **Key Findings Summary**  
-  *(To be filled after scan; example placeholder)*  
   Detected critical SQL injection (CVSS 9.8), XSS, and open ports exposing the database.
 
 ## Files in This Folder
