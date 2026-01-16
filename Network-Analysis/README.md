@@ -1,62 +1,61 @@
 # Project 2: Analyzing Network Structure and Security
 
-This folder contains documentation, diagrams, packet captures, and analysis for **Project 2** of my cybersecurity portfolio.
-
-As part of the **SecureTech Solutions** simulation, this project maps the lab network topology, captures and analyzes live traffic between VMs, identifies structural and security risks (e.g., flat network allowing lateral movement, clear-text credential transmission), and provides recommendations for improvement.
+This project maps the SecureTech Solutions lab network, captures live traffic between VMs, analyzes for structural flaws and modern security risks (e.g., weak encryption, unencrypted IoT protocols, vulnerable remote access), and provides realistic mitigations for a small-business environment.
 
 ## Project Overview
 
 - **Objective**  
-  Create a network diagram of the SecureTech lab, capture live traffic between VMs, analyze for insecure protocols/clear-text data/lateral movement risks, and recommend mitigations suitable for a small-business environment.
+  Diagram the lab topology, capture and dissect traffic to identify insecure configurations, lateral movement risks, and protocol weaknesses, then recommend current best-practice fixes.
 
 - **Company Context**  
-  SecureTech Solutions operates a flat, single-subnet internal network with a central server and employee workstations. Project 1 audit revealed an exposed web service on port 80. This project examines whether the network structure allows easy lateral movement or exposes sensitive data in transit.
+  SecureTech Solutions uses a flat, single-subnet internal network (192.168.56.0/24) with a central backend server and employee workstations. Project 1 audit exposed service banners and application flaws. This project evaluates whether the network structure amplifies those risks (e.g., unencrypted remote access or IoT traffic).
 
 - **Skills Demonstrated**  
-  - Network topology mapping  
-  - Packet capture and analysis  
-  - Identification of insecure protocols and risks  
-  - Security recommendation and mitigation planning
+  - Network topology visualization  
+  - Packet-level traffic capture & analysis (Wireshark)  
+  - Identification of 2025–2026 relevant risks (weak TLS, unencrypted protocols, VPN misconfigs)  
+  - Practical mitigation planning for small businesses
 
 - **Tools Used**  
   - Draw.io (diagramming)  
-  - Wireshark (packet capture and analysis)  
-  - Simulated traffic generation (ping, FTP, Telnet, HTTP Basic Auth)
+  - Wireshark (capture & analysis)  
+  - OpenVPN (weak VPN demo)  
+  - Mosquitto (unencrypted MQTT demo)  
+  - Apache + weak TLS config (HTTP3/TLS issues demo)
 
-- **Key Findings Summary**  
-  (To be filled after analysis)  
-  Flat network with no segmentation allows lateral movement from compromised workstation to server. Clear-text credentials transmitted via FTP/Telnet/HTTP Basic Auth. Recommend VLANs/firewall rules and secure protocols.
+- **Key Findings Summary** (to be filled after analysis)  
+  Flat network enables lateral movement. Weak TLS ciphers, unencrypted MQTT, and misconfigured VPN expose data/handshakes. Recommend segmentation, TLS 1.3 only, and encrypted protocols.
 
-## Lab Setup Additions for Demonstration
+## Lab Setup Additions (Modern Vulnerabilities for Testing)
 
-To make Wireshark captures more illustrative of real-world security issues, the following **intentionally insecure services** were temporarily enabled on SecureTech-Server (192.168.56.101). These are **lab-only** and will be disabled after the project.
+To simulate current (2025–2026) risks visible in Wireshark, the following were intentionally configured on SecureTech-Server (192.168.56.101). All are **lab-only** and reversible.
 
-1. **FTP (vsftpd)** – Clear-text username/password transmission  
-   - Installed: `sudo apt install vsftpd -y`  
-   - Test user: `ftpuser` (created with password)  
-   - Purpose: Capture plain-text FTP login in Wireshark
+1. **Misconfigured OpenVPN (Weak Ciphers)**  
+   - Simulates CVE-2025-20333 style remote access flaws (weak negotiation, potential RCE/lateral movement)  
+   - Config: AES-128-CBC (outdated/weak) on UDP 1194  
+   - Purpose: Capture weak cipher handshake
 
-2. **Telnet (telnetd)** – All session data unencrypted  
-   - Installed: `sudo apt install telnetd -y`  
-   - Purpose: Capture full session (including password) in clear text
+2. **Unencrypted MQTT Broker (Mosquitto)**  
+   - Simulates 2026 IoT risks (clear-text device messages)  
+   - Port: 1883 (no TLS)  
+   - Purpose: Capture plain-text publish/subscribe messages
 
-3. **HTTP Basic Auth test directory** – Credentials base64-encoded (not encrypted)  
-   - Directory: `/var/www/html/test-auth`  
-   - .htpasswd created with `htpasswd -c /etc/apache2/.htpasswd testuser`  
-   - Apache config: Added `<Directory>` block with Basic Auth  
-   - Purpose: Capture Authorization header with base64(user:pass)
+3. **Weak TLS/HTTP3 Server (Apache)**  
+   - Simulates HTTP3/QUIC issues (weak ciphers, fallback risks)  
+   - Config: Added deprecated ciphers (e.g., RC4) to SSL suite  
+   - Purpose: Capture weak cipher negotiation and unencrypted fallback
 
-All additions are **reversible**:
-- `sudo systemctl disable --now vsftpd`
-- `sudo apt purge telnetd`
-- Remove auth config from `/etc/apache2/sites-available/000-default.conf`
+**Reversal Commands** (run after project):
+- `sudo systemctl disable --now openvpn@server; sudo apt purge openvpn -y`
+- `sudo systemctl disable --now mosquitto; sudo apt purge mosquitto -y`
+- Restore Apache SSL config & restart: `sudo systemctl restart apache2`
 
 ## Files in This Folder
 
-- `network-diagram.drawio` / `network-diagram.png` — Visual topology of VMs, IPs, and connections
-- `wireshark-capture.pcapng` — Raw packet capture file(s)
-- `analysis-report.md` — Full write-up with screenshots, findings, and recommendations
-- `screenshots/` — Images of Wireshark filters, packet details, clear-text credentials, etc.
+- `network-diagram.drawio` / `network-diagram.png` — Topology of VMs, IPs, and added services
+- `wireshark-capture.pcapng` — Raw traffic captures (insecure logins, MQTT, VPN, weak TLS)
+- `analysis-report.md` — Detailed write-up with screenshots, findings, and recommendations
+- `screenshots/` — Wireshark filters, weak cipher handshakes, clear-text MQTT, etc.
 
 ## Setup Notes
 
@@ -66,12 +65,14 @@ All additions are **reversible**:
   - Kali-Tools: 192.168.56.103  
   - Host: 192.168.56.1
 
-- **Performed from**: Kali-Tools VM (primary capture point) and Windows host (optional Wireshark)
+- **Capture Interface on Kali**: eth1 / enp0s8 (address 192.168.56.103)
+
+- **Performed from**: Kali-Tools VM (primary capture) and Workstation (traffic generation)
 
 ## Lessons Learned
 
-- Flat networks are common in small businesses but enable easy lateral movement after initial compromise.
-- Unencrypted protocols (FTP, Telnet, HTTP Basic Auth) remain a significant risk even in modern environments.
-- Wireshark is essential for validating audit findings and demonstrating real traffic risks.
+- Flat networks remain common in small businesses but drastically increase lateral movement risk.
+- Weak/outdated encryption (e.g., AES-128-CBC, RC4) and unencrypted protocols (MQTT) are still exploited in 2025–2026.
+- Wireshark remains essential for validating configuration risks in real traffic.
 
 For full portfolio context, see the main repo [README](../../README.md).
