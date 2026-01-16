@@ -1,0 +1,14 @@
+### Nmap Reconnaissance Results
+
+Command executed from Kali-Tools VM:
+
+nmap -sV -O 192.168.56.101 -oN nmap-scan-results.txt
+
+Key findings:
+- **Port 80/tcp open** running **Apache httpd 2.4.58 (Ubuntu)** — the web server hosting the internal DVWA portal is accessible and exposes its exact version.
+- OS fingerprint: Strong match for Linux 4.15–5.19 kernels (consistent with Ubuntu 24.04).
+- 999 ports filtered — indicates firewall protection on closed ports (positive security control).
+
+Risk: Exposed service/version banner allows attackers to research specific CVEs for Apache 2.4.58 (e.g., potential mod_proxy vulnerabilities if modules are enabled).
+
+Recommendation: Disable server tokens (`ServerTokens Prod` in apache2.conf) to hide version info.
